@@ -16,7 +16,9 @@ static void InvalidatMainWindow()
 static void CloseCandidateList()
 {
     g_bCandList = false;
+    DWORD t = g_Candidate.dwState;
     memset(&g_Candidate, 0, sizeof(g_Candidate));
+    g_Candidate.dwState = t;
     InvalidatMainWindow();
 }
 
