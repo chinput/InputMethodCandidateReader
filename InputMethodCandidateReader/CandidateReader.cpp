@@ -37,7 +37,7 @@ static void InvalidatMainWindow()
     swprintf_s(szt, L"当前页候选个数:      %d", g_Candidate.dwPageSize);
     wss << szt << L"\r\n\r\n";
 
-    swprintf_s(szt, L"当前(首选)候选:   %s", g_Candidate.szCandidate[g_Candidate.uIndex - g_Candidate.dwPageStart]);
+    swprintf_s(szt, L"选中候选:   %s", g_Candidate.szCandidate[g_Candidate.uIndex - g_Candidate.dwPageStart]);
     wss << szt << L"\r\n\r\n";
 
     for (UINT i = 0; i < g_Candidate.dwPageSize && i < ARRAYSIZE(g_Candidate.szCandidate); i++)
