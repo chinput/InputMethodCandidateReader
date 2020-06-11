@@ -47,7 +47,7 @@ struct Candidate
     DWORD dwPageSize;              // 当前页候选个数
 
     wchar_t szComposing[256];      // 编码
-    wchar_t szCandidate[10][256];  // 当前页候选
+    wchar_t szCandidate[128][256];  // 当前页候选
 };
 
 class CandidateReader

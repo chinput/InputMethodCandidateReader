@@ -232,8 +232,8 @@ STDAPI CandidateReader::CUIElementSink::BeginUIElement(DWORD dwUIElementId, BOOL
 
     ITfReadingInformationUIElement* preading = NULL;
     ITfCandidateListUIElement* pcandidate = NULL;
-    *pbShow = FALSE;
-    //*pbShow = TRUE;
+    //*pbShow = FALSE;
+    *pbShow = TRUE;
     if (!g_bCandList && SUCCEEDED(pElement->QueryInterface(__uuidof(ITfReadingInformationUIElement),
         (void**)&preading)))
     {
@@ -555,7 +555,7 @@ void CandidateReader::MakeCandidateStrings(ITfCandidateListUIElement* pcandidate
         }
 
         UINT uCandPageSize = min(g_Candidate.dwPageSize, 10);  // 本示例的g_Candidate.szCandidate最大个数为10, 因此min处理
-        for (UINT i = g_Candidate.dwPageStart, j = 0; (DWORD)i < g_Candidate.uCount && j < uCandPageSize; i++, j++)
+        for (UINT i = g_Candidate.dwPageStart, j = 0; (DWORD)i < g_Candidate.uCount && j < 128; i++, j++)
         {
             if (SUCCEEDED(pcandidate->GetString(i, &bstr)))  //获取候选列表的第i个候选串
             {
