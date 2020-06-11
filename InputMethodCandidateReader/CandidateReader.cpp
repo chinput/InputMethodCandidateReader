@@ -1,15 +1,52 @@
 #include "CandidateReader.h"
 
 HWND g_hwndMain = NULL;
+HWND g_hInfoEdit = NULL;
 static bool                     g_bChineseIME;
 static bool                     g_bUILessMode = false;
 static bool                     g_bCandList = false;
 Candidate                       g_Candidate = { 0 };
 
-
+#include <sstream>
 static void InvalidatMainWindow()
 {
-    InvalidateRect(g_hwndMain, NULL, TRUE);
+    std::wstringstream wss;
+
+    wchar_t szt[512];
+    swprintf_s(szt, L"转换候选列表:       %s", g_Candidate.dwState == IMEUI_STATE_ON ? L"开启" : L"关闭");
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"输入编码:            %s", g_Candidate.szComposing);
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"总候选个数:          %d", g_Candidate.uCount);
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"总候选页数:          %d", g_Candidate.uPageCnt);
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"当前候选页序号:      %d", g_Candidate.uCurrentPage);
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"当前候选序号:        %d", g_Candidate.uIndex);
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"当前页首候选序号:    %d", g_Candidate.dwPageStart);
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"当前页候选个数:      %d", g_Candidate.dwPageSize);
+    wss << szt << L"\r\n\r\n";
+
+    swprintf_s(szt, L"当前(首选)候选:   %s", g_Candidate.szCandidate[g_Candidate.uIndex - g_Candidate.dwPageStart]);
+    wss << szt << L"\r\n\r\n";
+
+    for (UINT i = 0; i < g_Candidate.dwPageSize && i < ARRAYSIZE(g_Candidate.szCandidate); i++)
+    {
+        wss << i + 1 << L"."
+            << g_Candidate.szCandidate[i] << L"    ";
+    }
+
+    SetWindowText(g_hInfoEdit, wss.str().c_str());
 }
 
 
