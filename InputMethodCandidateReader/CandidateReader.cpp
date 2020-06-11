@@ -13,7 +13,7 @@ static void InvalidatMainWindow()
     std::wstringstream wss;
 
     wchar_t szt[512];
-    swprintf_s(szt, L"转换候选列表:       %s", g_Candidate.dwState == IMEUI_STATE_ON ? L"开启" : L"关闭");
+    swprintf_s(szt, L"转换候选列表:        %s", g_Candidate.dwState == IMEUI_STATE_ON ? L"开启" : L"关闭");
     wss << szt << L"\r\n";
 
     swprintf_s(szt, L"输入编码:            %s", g_Candidate.szComposing);
@@ -28,16 +28,16 @@ static void InvalidatMainWindow()
     swprintf_s(szt, L"当前候选页序号:      %d", g_Candidate.uCurrentPage);
     wss << szt << L"\r\n";
 
-    swprintf_s(szt, L"当前候选序号:        %d", g_Candidate.uIndex);
-    wss << szt << L"\r\n";
-
     swprintf_s(szt, L"当前页首候选序号:    %d", g_Candidate.dwPageStart);
     wss << szt << L"\r\n";
 
     swprintf_s(szt, L"当前页候选个数:      %d", g_Candidate.dwPageSize);
     wss << szt << L"\r\n\r\n";
 
-    swprintf_s(szt, L"选中候选:   %s", g_Candidate.szCandidate[g_Candidate.uIndex - g_Candidate.dwPageStart]);
+    swprintf_s(szt, L"选中候选序号:        %d", g_Candidate.uIndex);
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"选中候选:            %s", g_Candidate.szCandidate[g_Candidate.uIndex - g_Candidate.dwPageStart]);
     wss << szt << L"\r\n\r\n";
 
     for (UINT i = 0; i < g_Candidate.dwPageSize && i < ARRAYSIZE(g_Candidate.szCandidate); i++)
