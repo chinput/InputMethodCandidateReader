@@ -13,7 +13,13 @@ static void InvalidatMainWindow()
     std::wstringstream wss;
 
     wchar_t szt[512];
-    swprintf_s(szt, L"转换候选列表:        %s", g_Candidate.dwState == IMEUI_STATE_ON ? L"开启" : L"关闭");
+    swprintf_s(szt, L"转换候选:        %s", g_Candidate.dwState == IMEUI_STATE_ON ? L"开启" : L"关闭");
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"中英标点:        %s", g_Candidate.dwSmbol == 0 ? L"英文标点" : L"中文标点");
+    wss << szt << L"\r\n";
+
+    swprintf_s(szt, L"全半角:        %s", g_Candidate.dwFullShare == 0 ? L"半角" : L"全角");
     wss << szt << L"\r\n";
 
     swprintf_s(szt, L"输入编码:            %s", g_Candidate.szComposing);
@@ -354,14 +360,44 @@ void CandidateReader::UpdateImeState(BOOL bResetCompartmentEventSink)
         pTfConvMode->GetValue(&valConvMode);
         if (valOpenMode.vt == VT_I4)
         {
-            if (g_bChineseIME)
+          //  if (g_bChineseIME)
             {
-                g_Candidate.dwState = valOpenMode.lVal != 0 && valConvMode.lVal != 0 ? IMEUI_STATE_ON : IMEUI_STATE_ENGLISH;
+#define IME_CMODE_NATIVE   0x0001
+#define IME_CMODE_FULLSHAPE   0x0008
+#define IME_CMODE_SYMBOL   0x0400
+
+                if (valOpenMode.lVal)
+                {
+                    //g_Candidate.dwState = valConvMode.lVal != 0 ? IMEUI_STATE_ON : IMEUI_STATE_ENGLISH;
+                    if (valConvMode.lVal & IME_CMODE_NATIVE)
+                    {
+                        g_Candidate.dwState = IMEUI_STATE_ON;
+                    }
+                    else
+                    {
+                        g_Candidate.dwState = IMEUI_STATE_ENGLISH;
+                    }
+
+                    if (valConvMode.lVal & IME_CMODE_SYMBOL)
+                        g_Candidate.dwSmbol = 1;
+                    else
+                        g_Candidate.dwSmbol = 0;
+
+                    if (valConvMode.lVal & IME_CMODE_FULLSHAPE)
+                        g_Candidate.dwFullShare = 1;
+                    else
+                        g_Candidate.dwFullShare = 0;
+                }
+                else
+                {
+                    g_Candidate.dwState = IMEUI_STATE_ENGLISH;
+                    g_Candidate.dwSmbol = 0;
+                }
             }
-            else
-            {
-                g_Candidate.dwState = valOpenMode.lVal != 0 ? IMEUI_STATE_ON : IMEUI_STATE_OFF;
-            }
+            //else
+            //{
+            //    g_Candidate.dwState = valOpenMode.lVal != 0 ? IMEUI_STATE_ON : IMEUI_STATE_OFF;
+            //}
         }
         VariantClear(&valOpenMode);
         VariantClear(&valConvMode);
@@ -385,7 +421,7 @@ STDAPI CandidateReader::CUIElementSink::OnActivated(DWORD dwProfileType, LANGID 
     {
 #define LANG_CHS MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED)
 #define LANG_CHT MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL)
-        g_bChineseIME = (dwProfileType & TF_PROFILETYPE_INPUTPROCESSOR) && langid == LANG_CHT;
+        g_bChineseIME = (dwProfileType & TF_PROFILETYPE_INPUTPROCESSOR) && (langid == LANG_CHT || langid == LANG_CHS);
         if (dwProfileType & TF_PROFILETYPE_INPUTPROCESSOR)
         {
             UpdateImeState(TRUE);

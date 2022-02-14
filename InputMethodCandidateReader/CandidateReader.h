@@ -37,7 +37,9 @@
 
 struct Candidate 
 {
-    DWORD dwState;                 // 当前状态
+    DWORD dwState;                 // 当前中英转换状态
+    DWORD dwFullShare;             // 当前全半角状态
+    DWORD dwSmbol;                  // 当前中英文标点
 
     UINT uIndex;                   // 当前候选序号
     UINT uCount;                   // 总候选个数
